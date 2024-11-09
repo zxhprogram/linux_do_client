@@ -2,6 +2,7 @@ import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:html_to_flutter/html_to_flutter.dart';
 import 'package:linux_do/service/NetworkService.dart';
 
 class TopicDetailPage extends StatefulWidget {
@@ -128,8 +129,22 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height - 120,
+                  child: SingleChildScrollView(
+                    child: Html(
+                      config: HtmlConfig(),
+                      data:
+                          detail?.posts == null ? '' : detail!.posts[0].cooked!,
+                    ),
+                    // Text(
+                    //   detail?.posts == null ? '' : detail!.posts[0].cooked!,
+                    //   style: TextStyle(fontFamily: 'light', fontSize: 24),
+                    // ),
                   ),
                 )
               ],
