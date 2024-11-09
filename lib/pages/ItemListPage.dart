@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../config/GlobalConfig.dart';
 import '../config/ThemeConfig.dart';
 import '../service/NetworkService.dart';
+import '../state/GlobalStateProvider.dart';
 
 class ItemListPage extends StatefulWidget {
   @override
