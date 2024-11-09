@@ -114,6 +114,13 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      theme: ThemeData(
+        scrollbarTheme: ScrollbarThemeData(
+          thumbColor: WidgetStateProperty.all(Colors.pinkAccent),
+          thickness: WidgetStateProperty.all(2.0),
+          trackBorderColor: WidgetStatePropertyAll(Colors.blue),
+        ),
+      ),
       routerConfig: _router,
     );
   }

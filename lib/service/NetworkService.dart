@@ -11,7 +11,6 @@ main() {
 }
 
 class NetworkService {
-
   Future<List<Item>> latest({int pageIndex = 0}) async {
     String url = '/latest.json';
     if (pageIndex != 0) {
@@ -25,6 +24,22 @@ class NetworkService {
         ..id = e.id
         ..title = e.title
         ..pinned = e.pinned
+        ..authorName = _findUserName(
+            users,
+            e.posters
+                .where((p) {
+                  return p.description.contains('原始发帖人');
+                })
+                .firstOrNull
+                ?.user_id)
+        ..lastPosterName = _findUserName(
+            users,
+            e.posters
+                .where((p) {
+                  return p.extras == 'latest';
+                })
+                .firstOrNull
+                ?.user_id)
         ..avatar = users
             .where((x) {
               return x.id == e.posters[0].user_id;
@@ -34,6 +49,14 @@ class NetworkService {
     }).toList();
   }
 
+  String? _findUserName(List<User> users, int? userId) {
+    return users
+        .where((u) {
+          return u.id == userId;
+        })
+        .firstOrNull
+        ?.name;
+  }
 }
 
 class Item {
@@ -41,8 +64,16 @@ class Item {
   String? title;
   String? avatar;
   bool pinned;
+  String? authorName;
+  String? lastPosterName;
 
-  Item({this.id, this.title, this.avatar, this.pinned = false});
+  Item(
+      {this.authorName,
+      this.lastPosterName,
+      this.id,
+      this.title,
+      this.avatar,
+      this.pinned = false});
 }
 
 class Latest {

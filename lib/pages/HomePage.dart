@@ -4,23 +4,18 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:linux_do/main.dart';
 import 'package:linux_do/pages/ItemListPage.dart';
 
-class HomePage extends StatefulWidget {
-  Widget secondPart;
+class HomePage extends StatelessWidget {
+  final Widget secondPart;
 
   HomePage({super.key, required this.secondPart});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
         children: [
           NavigationBar(),
-          Expanded(child: widget.secondPart),
+          Expanded(child: secondPart),
         ],
       ),
     );
@@ -94,10 +89,10 @@ class SecondNavigationPart extends StatelessWidget {
     return Row(
       children: [
         Container(
-          color: Colors.blue,
           width: 400,
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           // child: ItemListPage(),
-          child: Page1(),
+          child: ItemListPage(),
         ),
         Expanded(child: child)
       ],
@@ -146,22 +141,22 @@ class Page2 extends StatelessWidget {
   }
 }
 
-class Page1 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-            onPressed: () {
-              context.go('/');
-            },
-            child: Text('child page1')),
-        ElevatedButton(
-            onPressed: () {
-              context.go('/childPage1');
-            },
-            child: Text('child page2')),
-      ],
-    );
-  }
-}
+// class Page1 extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         ElevatedButton(
+//             onPressed: () {
+//               context.go('/');
+//             },
+//             child: Text('child page1')),
+//         ElevatedButton(
+//             onPressed: () {
+//               context.go('/childPage1');
+//             },
+//             child: Text('child page2')),
+//       ],
+//     );
+//   }
+// }
