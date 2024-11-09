@@ -6,11 +6,19 @@ var _dio = Dio()..options.baseUrl = 'https://linux.do';
 var networkService = NetworkService();
 const avatarPrefix = 'https://linux.do';
 
-main() {
-  NetworkService().latest();
+main() async {
+  var l = await NetworkService().topicDetailById(254925);
+  print(l);
 }
 
 class NetworkService {
+  Future<List<PostDetail>> topicDetailById(int id) async {
+    var r = await _dio.get('/t/$id.json');
+    return (r.data['post_stream']['posts'] as List).map((e) {
+      return PostDetail.fromJson(e);
+    }).toList();
+  }
+
   Future<List<Item>> latest({int pageIndex = 0}) async {
     String url = '/latest.json';
     if (pageIndex != 0) {
@@ -56,6 +64,21 @@ class NetworkService {
         })
         .firstOrNull
         ?.name;
+  }
+}
+
+class PostDetail {
+  int id;
+  String name;
+  String? username;
+  String? create_at;
+  String? cooked;
+
+  PostDetail(this.id, this.name, this.username, this.create_at, this.cooked);
+
+  factory PostDetail.fromJson(Map<String, dynamic> json) {
+    return PostDetail(json['id'], json['name'], json['username'],
+        json['create_at'], json['cooked']);
   }
 }
 

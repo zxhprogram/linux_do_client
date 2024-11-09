@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linux_do/pages/HomePage.dart';
 import 'package:linux_do/pages/ItemListPage.dart';
+import 'package:linux_do/pages/TopicDetailPage.dart';
 
 void main() {
   runApp(const App());
@@ -41,9 +42,11 @@ final GoRouter _router = GoRouter(initialLocation: '/', routes: [
               GoRoute(
                 path: '/',
                 pageBuilder: (ctxg, stateg) {
+                  print('----> ${stateg.extra}');
                   return CustomTransitionPage(
-                    child: Container(
-                      color: Colors.green,
+                    child: TopicDetailPage(
+                      topicId:
+                          stateg.extra == null ? null : stateg.extra as int,
                     ),
                     transitionsBuilder:
                         (c1, animation, secondaryAnimation, child) {
