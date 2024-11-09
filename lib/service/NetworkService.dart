@@ -1,21 +1,48 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:linux_do/config/GlobalConfig.dart';
 
 var _dio = Dio()..options.baseUrl = 'https://linux.do';
 var networkService = NetworkService();
+const avatarPrefix = 'https://linux.do';
 
 main() {
   NetworkService().latest();
 }
 
 class NetworkService {
-  Future<Latest> latest({int pageIndex = 0}) async {
+
+  Future<List<Item>> latest({int pageIndex = 0}) async {
     String url = '/latest.json';
     if (pageIndex != 0) {
       url = '?no_definitions=true&page=$pageIndex';
     }
     var r = await _dio.get(url);
-    return Latest.frmJson(r.data);
+    var latest = Latest.frmJson(r.data);
+    var users = latest.users;
+    return latest.topic_list.topics.map((e) {
+      return Item()
+        ..id = e.id
+        ..title = e.title
+        ..pinned = e.pinned
+        ..avatar = users
+            .where((x) {
+              return x.id == e.posters[0].user_id;
+            })
+            .firstOrNull
+            ?.avatar();
+    }).toList();
   }
+
+}
+
+class Item {
+  int? id;
+  String? title;
+  String? avatar;
+  bool pinned;
+
+  Item({this.id, this.title, this.avatar, this.pinned = false});
 }
 
 class Latest {
@@ -101,7 +128,7 @@ class TopicItem {
   int views;
   int like_count;
   bool has_summary;
-  String last_poster_username;
+  String? last_poster_username;
   int category_id;
   bool pinned_globally;
   bool? featured_link;
@@ -137,7 +164,7 @@ class TopicItem {
       required this.views,
       required this.like_count,
       required this.has_summary,
-      required this.last_poster_username,
+      this.last_poster_username,
       required this.category_id,
       required this.pinned_globally,
       this.featured_link,
@@ -280,5 +307,23 @@ class User {
         flair_color: json['flair_color'],
         flair_group_id: json['flair_group_id'],
         trust_level: json['trust_level']);
+  }
+
+  String avatar() {
+    var r = avatar_template.split('/').map((e) {
+      if (e == '{size}') {
+        return '/$avatarSize';
+      }
+      return '/$e';
+    }).toList();
+    StringBuffer sb = StringBuffer();
+    for (var s in r) {
+      sb.write(s);
+    }
+    var result = '$avatarPrefix${sb.toString()}';
+    if (kDebugMode) {
+      print('$avatar_template -> $result');
+    }
+    return result;
   }
 }

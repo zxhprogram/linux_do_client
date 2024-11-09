@@ -1,79 +1,120 @@
 import 'package:flutter/material.dart';
-import 'package:linux_do/service/NetworkService.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linux_do/pages/HomePage.dart';
+import 'package:linux_do/pages/ItemListPage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+PageRouteBuilder _createPageRoute(Widget page) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionDuration: const Duration(seconds: 3),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0); // 从右侧滑入
+      const end = Offset.zero; // 到达目标位置
+      const curve = Curves.ease; // 动画曲线
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        fontFamily: 'mi',
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var offsetAnimation = animation.drive(tween);
+
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
+    },
+  );
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  List<TopicItem> _itemList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadResource();
-  }
-
-  Future<void> _loadResource() async {
-    var latest = await networkService.latest();
-    setState(() {
-      _itemList = latest.topic_list.topics;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: ListView.builder(
-            itemBuilder: (c, i) {
-              return SizedBox(
-                height: 60,
-                child: Row(
-                  children: [
-                    Text(
-                      '${_itemList[i].title}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'thin',
-                      ),
-                    )
-                  ],
-                ),
-              );
+final GoRouter _router = GoRouter(initialLocation: '/', routes: [
+  ShellRoute(
+      builder: (ctx, state, child) {
+        return HomePage(secondPart: child);
+      },
+      routes: [
+        ShellRoute(
+            builder: (ctx, state, child) {
+              return SecondNavigationPart(child);
             },
-            itemCount: _itemList.length),
-      ),
+            routes: [
+              GoRoute(
+                path: '/',
+                pageBuilder: (ctxg, stateg) {
+                  return CustomTransitionPage(
+                    child: Container(
+                      color: Colors.green,
+                    ),
+                    transitionsBuilder:
+                        (c1, animation, secondaryAnimation, child) {
+                      return _createPageRoute(child).buildTransitions(
+                          c1, animation, secondaryAnimation, child);
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/childPage1',
+                pageBuilder: (ctxg, stateg) {
+                  return CustomTransitionPage(
+                    child: Container(
+                      color: Colors.red,
+                    ),
+                    transitionsBuilder:
+                        (c1, animation, secondaryAnimation, child) {
+                      return _createPageRoute(child).buildTransitions(
+                          c1, animation, secondaryAnimation, child);
+                    },
+                  );
+                },
+              ),
+            ]),
+        ShellRoute(
+            builder: (ctx, state, child) {
+              return ThirdNavigationPart(child);
+            },
+            routes: [
+              GoRoute(
+                path: '/page2',
+                pageBuilder: (ctxg, stateg) {
+                  return CustomTransitionPage(
+                    child: Container(
+                      color: Colors.yellowAccent,
+                    ),
+                    transitionsBuilder:
+                        (c1, animation, secondaryAnimation, child) {
+                      return _createPageRoute(child).buildTransitions(
+                          c1, animation, secondaryAnimation, child);
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/childPage2',
+                pageBuilder: (ctxg, stateg) {
+                  return CustomTransitionPage(
+                    child: Container(
+                      color: Colors.black26,
+                    ),
+                    transitionsBuilder:
+                        (c1, animation, secondaryAnimation, child) {
+                      return _createPageRoute(child).buildTransitions(
+                          c1, animation, secondaryAnimation, child);
+                    },
+                  );
+                },
+              ),
+            ]),
+      ]),
+]);
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: _router,
     );
   }
 }

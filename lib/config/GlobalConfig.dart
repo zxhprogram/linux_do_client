@@ -1,0 +1,1 @@
+const avatarSize = 50;
