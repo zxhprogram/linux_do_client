@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:linux_do/config/GlobalConfig.dart';
@@ -5,13 +7,40 @@ import 'package:linux_do/config/GlobalConfig.dart';
 var _dio = Dio()..options.baseUrl = 'https://linux.do';
 var networkService = NetworkService();
 const avatarPrefix = 'https://linux.do';
+var _cacheMap = <dynamic, Cache>{};
 
 main() async {
-  var l = await NetworkService().topicDetailById(254925);
-  print(l);
+  // var l = await NetworkService().topicDetailById(254925);
+  // print(l);
+  print(DateTime.timestamp());
+  print(DateTime.timestamp().runtimeType);
+}
+
+class Cache<K, V> {
+  final K k;
+  final DateTime timestamp;
+  final V v;
+
+  Cache(this.k, this.timestamp, this.v);
 }
 
 class NetworkService {
+  Future<int> topicCommentCount(int id) async {
+    if (_cacheMap[id] != null &&
+        _cacheMap[id]!
+            .timestamp
+            .isAfter(DateTime.timestamp().subtract(Duration(minutes: 5)))) {
+      print('hit cache : $id -> ${_cacheMap[id]!.v}');
+      return _cacheMap[id]!.v;
+    }
+    _cacheMap.remove(id);
+    var r = await _dio.get('/t/$id.json');
+    var data = r.data['post_stream']['stream'];
+    var result = data == null ? 0 : (data as List).length;
+    _cacheMap[id] = Cache(id, DateTime.timestamp(), result);
+    return result;
+  }
+
   Future<List<PostDetail>> topicDetailById(int id) async {
     var r = await _dio.get('/t/$id.json');
     return (r.data['post_stream']['posts'] as List).map((e) {

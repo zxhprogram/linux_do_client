@@ -1,6 +1,7 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:linux_do/service/NetworkService.dart';
 
 class TopicDetailPage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   }
 
   Future<void> _loadResource() async {
-    if (widget.topicId == -1) {
+    if (widget.topicId == -1 || widget.topicId == null) {
       return;
     }
     await networkService.topicDetailById(widget.topicId!);
@@ -31,20 +32,22 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: widget.topicId == null || widget.topicId == -1
-          ? Column(
-              children: [
-                Container(
-                  height: 80,
-                  color: Colors.blue,
-                  child: Text(
-                    '空空如也',
-                    style: TextStyle(
-                        fontFamily: 'normal',
-                        foreground: Paint()..color = Colors.white,
-                        fontSize: 30),
+          ? Center(
+              child: Opacity(
+                opacity: 0.7,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
                   ),
-                )
-              ],
+                  clipBehavior: Clip.hardEdge,
+                  child: SvgPicture.asset(
+                    height: 200,
+                    width: 200,
+                    'assets/svg/liugou.svg',
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,6 +5,7 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:linux_do/main.dart';
 
 import '../config/GlobalConfig.dart';
+import '../config/ThemeConfig.dart';
 import '../service/NetworkService.dart';
 
 class ItemListPage extends StatefulWidget {
@@ -77,11 +78,30 @@ class TopicContentItemUi extends StatefulWidget {
 
 class _TopicContentItemUiState extends State<TopicContentItemUi> {
   int _currentHoverIndex = -100;
+  int _count = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadResource();
+  }
+
+  Future<void> _loadResource() async {
+    if (_count == 0) {
+      print(88888888);
+      int c = await networkService
+          .topicCommentCount(widget.itemList[widget.index].id!);
+      setState(() {
+        _count = c;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     var i = widget.index;
     var maxWidth = widget.constraints.maxWidth - avatarSize;
+    print('999999999-> ${widget.itemList[i].authorName}');
     print(maxWidth);
     return MouseRegion(
       onEnter: (_) {
@@ -128,11 +148,13 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
                             height: avatarSize / 1.0,
                             width: avatarSize / 1.0,
                             decoration: BoxDecoration(
-                              color: Colors.blue,
+                              color: randomColor(),
                             ),
                             child: Center(
                               child: Text(
-                                widget.itemList[i].authorName!.substring(0, 1),
+                                widget.itemList[i].authorName == null
+                                    ? ''
+                                    : widget.itemList[i].authorName!,
                                 style: TextStyle(
                                     fontFamily: 'bold',
                                     fontSize: 30,
@@ -169,7 +191,7 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
                         '${widget.itemList[i].title}',
                         style: TextStyle(
                             fontSize: 16,
-                            fontFamily: 'light',
+                            fontFamily: 'medium',
                             overflow: TextOverflow.ellipsis),
                       ),
                     ),
@@ -178,19 +200,27 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
                       child: Row(
                         children: [
                           Container(
-                            width: 132,
-                            child: Text(
-                              widget.itemList[i].lastPosterName == null
-                                  ? ''
-                                  : widget.itemList[i].lastPosterName!,
-                              style: TextStyle(
-                                  fontFamily: 'light',
-                                  overflow: TextOverflow.fade),
-                              softWrap: false,
+                            constraints: BoxConstraints(maxWidth: 120),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('[$_count条]'),
+                                Flexible(
+                                  child: Text(
+                                    widget.itemList[i].lastPosterName == null
+                                        ? ''
+                                        : widget.itemList[i].lastPosterName!,
+                                    style: TextStyle(
+                                        fontFamily: 'light',
+                                        overflow: TextOverflow.fade),
+                                    softWrap: false,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Container(
-                            width: maxWidth - 157,
+                          Flexible(
+                            flex: 2,
                             child: Text(
                               ':这是测试数据，请你查收，样式展示22222222222222',
                               style: TextStyle(
@@ -210,16 +240,5 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
         ),
       ),
     );
-  }
-
-  double _getTextWidth(String text, TextStyle style) {
-    final textPainter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      textDirection: TextDirection.ltr, // 设置文本的方向
-    );
-    textPainter.layout(); // 布局文本，计算宽度和高度
-    var r = textPainter.size.width;
-    print(r);
-    return r; // 获取宽度
   }
 }
