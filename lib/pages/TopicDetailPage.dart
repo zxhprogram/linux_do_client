@@ -14,6 +14,8 @@ class TopicDetailPage extends StatefulWidget {
 }
 
 class _TopicDetailPageState extends State<TopicDetailPage> {
+  PostDetail? detail = null;
+
   @override
   void initState() {
     super.initState();
@@ -21,10 +23,15 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   }
 
   Future<void> _loadResource() async {
+    print('load detail ${widget.topicId}');
     if (widget.topicId == -1 || widget.topicId == null) {
       return;
     }
-    await networkService.topicDetailById(widget.topicId!);
+    var de = await networkService.topicDetailById(widget.topicId!);
+    setState(() {
+      detail = de;
+      print('detail -> ${detail?.title}');
+    });
   }
 
   @override
@@ -53,14 +60,14 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 80,
+                  height: 100,
                   // color: Colors.pinkAccent,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '今天白天我在课堂上睡着了',
-                        style: TextStyle(fontSize: 30, fontFamily: 'bold'),
+                        detail?.title == null ? '' : detail!.title,
+                        style: TextStyle(fontSize: 24, fontFamily: 'bold'),
                       ),
                       Row(
                         children: [

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linux_do/pages/HomePage.dart';
-import 'package:linux_do/pages/ItemListPage.dart';
 import 'package:linux_do/pages/TopicDetailPage.dart';
+import 'package:linux_do/state/GlobalStateProvider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const App());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => GlobalStateProvider()),
+    ],
+    child: const App(),
+  ));
 }
 
 PageRouteBuilder _createPageRoute(Widget page) {

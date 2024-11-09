@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:linux_do/main.dart';
+import 'package:provider/provider.dart';
 
 import '../config/GlobalConfig.dart';
 import '../config/ThemeConfig.dart';
@@ -88,7 +89,6 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
 
   Future<void> _loadResource() async {
     if (_count == 0) {
-      print(88888888);
       int c = await networkService
           .topicCommentCount(widget.itemList[widget.index].id!);
       setState(() {
@@ -101,8 +101,6 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
   Widget build(BuildContext context) {
     var i = widget.index;
     var maxWidth = widget.constraints.maxWidth - avatarSize;
-    print('999999999-> ${widget.itemList[i].authorName}');
-    print(maxWidth);
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -117,7 +115,17 @@ class _TopicContentItemUiState extends State<TopicContentItemUi> {
       child: GestureDetector(
         onTap: () {
           print(widget.itemList[i].id);
-          context.go('/', extra: widget.itemList[i].id);
+          var isFirst =
+              context.read<GlobalStateProvider>().isFirstEnterDetailPage;
+          if (isFirst) {
+            context
+                .read<GlobalStateProvider>()
+                .changeItNotFirstEnterDetailPage();
+            context.push('/', extra: widget.itemList[i].id);
+          } else {
+            context.pop();
+            context.push('/', extra: widget.itemList[i].id);
+          }
         },
         child: Container(
           width: maxWidth,

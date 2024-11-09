@@ -11,6 +11,5 @@ const globalColorMap = {
 
 Color randomColor() {
   var index = Random().nextInt(globalColorMap.length);
-  print('----+++ $index');
   return globalColorMap[index + 1]!;
 }

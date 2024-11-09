@@ -10,10 +10,10 @@ const avatarPrefix = 'https://linux.do';
 var _cacheMap = <dynamic, Cache>{};
 
 main() async {
-  // var l = await NetworkService().topicDetailById(254925);
-  // print(l);
-  print(DateTime.timestamp());
-  print(DateTime.timestamp().runtimeType);
+  var l = await NetworkService().topicDetailById(255244);
+  print(l);
+  // print(DateTime.timestamp());
+  // print(DateTime.timestamp().runtimeType);
 }
 
 class Cache<K, V> {
@@ -41,11 +41,12 @@ class NetworkService {
     return result;
   }
 
-  Future<List<PostDetail>> topicDetailById(int id) async {
+  Future<PostDetail> topicDetailById(int id) async {
     var r = await _dio.get('/t/$id.json');
-    return (r.data['post_stream']['posts'] as List).map((e) {
-      return PostDetail.fromJson(e);
+    var posts = (r.data['post_stream']['posts'] as List).map((e) {
+      return PostDetailOfPost.fromJson(e);
     }).toList();
+    return PostDetail(posts, r.data['title']);
   }
 
   Future<List<Item>> latest({int pageIndex = 0}) async {
@@ -97,16 +98,32 @@ class NetworkService {
 }
 
 class PostDetail {
+  List<PostDetailOfPost> posts;
+  String title;
+
+  PostDetail(this.posts, this.title);
+
+  @override
+  String toString() {
+    return '$title';
+  }
+}
+
+class PostDetailOfPost {
   int id;
-  String name;
+  String? name;
   String? username;
   String? create_at;
+  String? title;
   String? cooked;
 
-  PostDetail(this.id, this.name, this.username, this.create_at, this.cooked);
+  PostDetailOfPost(
+      this.id, this.name, this.username, this.create_at, this.cooked,
+      {this.title});
 
-  factory PostDetail.fromJson(Map<String, dynamic> json) {
-    return PostDetail(json['id'], json['name'], json['username'],
+  factory PostDetailOfPost.fromJson(Map<String, dynamic> json) {
+    print('postdetailofpost -> $json');
+    return PostDetailOfPost(json['id'], json['name'], json['username'],
         json['create_at'], json['cooked']);
   }
 }
