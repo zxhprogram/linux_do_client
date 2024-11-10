@@ -134,13 +134,27 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height - 120,
+                  height: 300,
                   child: SingleChildScrollView(
-                    child: Html(
-                      config: HtmlConfig(),
-                      data:
-                          detail?.posts == null ? '' : detail!.posts[0].cooked!,
+                    child: RichText(
+                      text: TextSpan(
+                          text: '这是一个普通的文本',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontFamily: 'light',
+                            fontSize: 16,
+                          ),
+                          children: [
+                            WidgetSpan(
+                                child: Image.network(
+                                    'https://linux.do/uploads/default/original/3X/d/b/db85d9e3fc4563f38252a8bbe1d58cb2f0ecce06.jpeg'))
+                          ]),
                     ),
+                    // child: Html(
+                    //   config: HtmlConfig(),
+                    //   data:
+                    //       detail?.posts == null ? '' : detail!.posts[0].cooked!,
+                    // ),
                     // Text(
                     //   detail?.posts == null ? '' : detail!.posts[0].cooked!,
                     //   style: TextStyle(fontFamily: 'light', fontSize: 24),
